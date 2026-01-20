@@ -1,3 +1,3 @@
 
-rootProject.name = "valheim-serverless"
+rootProject.name = "psu-serverless"
 

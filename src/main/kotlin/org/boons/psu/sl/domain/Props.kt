@@ -1,8 +1,8 @@
-package org.boons.valheim.sl.domain
+package org.boons.psu.sl.domain
 
 data class Props(
     val gameSaveDir: String,
-    val gameWorldName: String,
+    val gameFiles: List<String>,
     val gameExe: String,
     val shareDir: String,
     val shareLockName: String,

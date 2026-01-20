@@ -1,47 +1,42 @@
-package org.boons.valheim.sl
+package org.boons.psu.sl
 
-import org.boons.valheim.sl.domain.Props
+import org.boons.psu.sl.domain.Props
 import java.nio.file.Path
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.io.path.*
 
-const val version = "0.2"
+const val version = "0.3"
 
 fun main() {
-    println("Valheim serverless v$version")
+    println("PSU serverless v$version")
 
     val props = loadProperties()
     println("Program props: $props")
 
-    val saveFile1 = Path.of(props.gameSaveDir, "${props.gameWorldName}.db")
-    val saveFile2 = Path.of(props.gameSaveDir, "${props.gameWorldName}.fwl")
+    val saveFiles = props.gameFiles.map { filename -> Path.of(props.gameSaveDir, filename) }
     val shareDir = Path.of(props.shareDir)
     val shareLockFile = shareDir.resolve("${props.shareLockName}.lock")
-    val shareFile1 = Path.of(props.shareDir, saveFile1.name)
-    val shareFile2 = Path.of(props.shareDir, saveFile2.name)
+    val shareFiles = saveFiles.map { saveFile -> Path.of(props.shareDir, saveFile.name) }
     val backupDir = Path.of(props.backupDir, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + "-local")
-    val backupFile1 = backupDir.resolve(saveFile1.name)
-    val backupFile2 = backupDir.resolve(saveFile2.name)
+    val backupFiles = saveFiles.map { saveFile -> backupDir.resolve(saveFile.name) }
 
     val locks = shareDir.listDirectoryEntries("*.lock")
     if (locks.isEmpty()) {
         shareLockFile.createFile()
         println("Lock set for ${props.shareLockName}")
 
-        if (saveFile1.exists()) {
+        if (saveFiles.first().exists()) {
             backupDir.createDirectories()
-            saveFile1.copyTo(backupFile1)
-            saveFile2.copyTo(backupFile2)
+            saveFiles.mapIndexed() { index, saveFile -> saveFile.copyTo(backupFiles[index]) }
             println("Local savegame backup created")
         } else {
             println("No local savegame to backup")
         }
 
-        if (shareFile1.exists()) {
-            shareFile1.copyTo(saveFile1, true)
-            shareFile2.copyTo(saveFile2, true)
+        if (shareFiles.first().exists()) {
+            shareFiles.mapIndexed { index, shareFile -> shareFile.copyTo(saveFiles[index], true) }
             println("Cloud savegame restored")
         } else {
             println("No cloud savegame found, nothing to restore")
@@ -59,20 +54,17 @@ fun main() {
             props.backupDir,
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + "-cloud"
         )
-        val backupCloudFile1 = backupCloudDir.resolve(saveFile1.name)
-        val backupCloudFile2 = backupCloudDir.resolve(saveFile2.name)
+        val backupCloudFiles = saveFiles.map { saveFile -> backupCloudDir.resolve(saveFile.name) }
 
-        if (shareFile1.exists()) {
+        if (shareFiles.first().exists()) {
             backupCloudDir.createDirectories()
-            shareFile1.copyTo(backupCloudFile1)
-            shareFile2.copyTo(backupCloudFile2)
+            shareFiles.mapIndexed { index, shareFile -> shareFile.copyTo(backupCloudFiles[index]) }
             println("Cloud savegame backup created")
         } else {
             println("No cloud savegame to backup")
         }
 
-        saveFile1.copyTo(shareFile1, true)
-        saveFile2.copyTo(shareFile2, true)
+        saveFiles.forEachIndexed { index, saveFile -> saveFile.copyTo(shareFiles[index], true) }
         println("Local savegame shared")
 
         shareLockFile.deleteExisting()
@@ -81,13 +73,13 @@ fun main() {
 }
 
 fun loadProperties(): Props {
-    val fis = ClassLoader.getSystemResourceAsStream("valheim-serverless.config")
+    val fis = ClassLoader.getSystemResourceAsStream("psu-serverless.config")
     val prop = Properties()
     prop.load(fis)
 
     return Props(
         prop.getProperty("game.savedir"),
-        prop.getProperty("game.worldname"),
+        prop.getProperty("game.savefiles").split(";"),
         prop.getProperty("game.exe"),
         prop.getProperty("share.dir"),
         prop.getProperty("share.lockname"),
