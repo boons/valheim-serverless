@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "2.1.0"
     application
 }
 
 group = "org.obon"
-version = "0.3"
+version = "0.4"
 
 repositories {
     mavenCentral()
