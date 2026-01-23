@@ -1,17 +1,19 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.1.20"
     application
 }
 
 group = "org.obon"
-version = "0.4"
+version = "0.5"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
     testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
 }
 
 tasks.test {
@@ -23,11 +25,11 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("org.boons.psu.sl.MainKt")
 }
 
 tasks.jar {
-    manifest.attributes["Main-Class"] = "MainKt"
+    manifest.attributes["Main-Class"] = "org.boons.psu.sl.MainKt"
     val dependencies = configurations
         .runtimeClasspath
         .get()
