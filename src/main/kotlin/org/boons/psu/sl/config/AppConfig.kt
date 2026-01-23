@@ -3,9 +3,11 @@ package org.boons.psu.sl.config
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Properties
+import kotlin.io.path.exists
+import kotlin.io.path.inputStream
 
 /**
- * Application configuration loaded from properties file.
+ * Application configuration loaded from external properties file.
  */
 data class AppConfig(
     val gameSaveDir: Path,
@@ -25,14 +27,25 @@ data class AppConfig(
         private const val BACKUP_DIR_KEY = "backup.dir"
 
         /**
-         * Loads configuration from the properties file in classpath.
+         * Loads configuration from external properties file.
+         * The file must be located in the same directory as the JAR.
+         * The file in resources is only an example and is never used.
          */
         fun load(): AppConfig {
-            val properties = Properties()
-            val inputStream = ClassLoader.getSystemResourceAsStream(CONFIG_FILE)
-                ?: throw IllegalStateException("Configuration file not found: $CONFIG_FILE")
+            val configPath = Paths.get(CONFIG_FILE)
 
-            properties.load(inputStream)
+            if (!configPath.exists()) {
+                throw IllegalStateException(
+                    "Configuration file not found: $CONFIG_FILE\n" +
+                    "The file must be located in the same directory as the JAR.\n" +
+                    "See the example file in src/main/resources/$CONFIG_FILE"
+                )
+            }
+
+            val properties = Properties()
+            configPath.inputStream().use { inputStream ->
+                properties.load(inputStream)
+            }
 
             return AppConfig(
                 gameSaveDir = Paths.get(properties.getRequiredProperty(GAME_SAVE_DIR_KEY)),

@@ -2,6 +2,12 @@
 
 ## Version 0.5 - Major Refactoring (January 2026)
 
+### Configuration Changes
+- **External Configuration**: Configuration file must now be placed in the same directory as the JAR
+- The file in `src/main/resources/psu-serverless.config.example` is now only a template
+- Application will no longer load configuration from classpath
+- Clear error message when configuration file is not found
+
 ### Architecture Refactoring
 - **Clean Code Principles**: Complete restructuring following SOLID principles
 - **Separation of Concerns**: Code organized into distinct layers:

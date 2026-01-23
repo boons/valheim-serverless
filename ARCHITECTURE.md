@@ -25,7 +25,9 @@ org.boons.psu.sl/
 ## Components
 
 ### 1. Configuration Layer
-- **AppConfig**: Loads and validates application configuration from properties file
+- **AppConfig**: Loads and validates application configuration from external file
+- File must be named `psu-serverless.config` and located in the same directory as the JAR
+- The file in `src/main/resources/` is only an example (suffix: `.example`)
 - Converts string paths to Path objects
 - Provides clear error messages for missing configuration
 

@@ -1,0 +1,23 @@
+# PSU Serverless Configuration Example
+# Copy this file to the same directory as the JAR and rename it to: psu-serverless.config
+# This file in resources is ONLY an example and will NOT be used by the application.
+
+# Directory where the game stores its saves locally
+game.savedir=/tmp/valheim/saves
+
+# Files and/or directories to sync (semicolon-separated)
+# Can be files OR directories OR both
+game.savefiles=coussatcloud
+
+# Game executable to launch (can include arguments)
+game.exe=whoami
+
+# Shared directory (must be synced via Dropbox/Google Drive/etc.)
+share.dir=/tmp/valheim-share
+
+# Player name for lock identification
+share.lockname=boons
+
+# Local backup directory
+backup.dir=/tmp/valheim-backup
+

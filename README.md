@@ -27,7 +27,9 @@ Share a Valheim map (or any game) with your friends without a dedicated server. 
 
 2. **Configure the application**
 
-Edit `src/main/resources/psu-serverless.config`:
+2. **Configure the application**
+
+Create a `psu-serverless.config` file **in the same directory as the JAR** (or in the project root for development):
 
 ```properties
 # Directory where the game stores its saves
@@ -48,6 +50,8 @@ share.lockname=YourName
 # Local backup directory
 backup.dir=/Users/yourname/valheim-backups
 ```
+
+**Note**: An example configuration file is provided in `src/main/resources/psu-serverless.config.example`. Copy it to the JAR directory and rename it to `psu-serverless.config`.
 
 3. **Run the application**
 ```bash
@@ -127,7 +131,6 @@ The distribution will be in `build/install/psu-serverless/`.
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Detailed architecture documentation
 - [CHANGELOG.md](CHANGELOG.md) - Version history
-- [JDK_MANAGEMENT.md](JDK_MANAGEMENT.md) - Java installation management on macOS
 
 ### 🐛 Troubleshooting
 

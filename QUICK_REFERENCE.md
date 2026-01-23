@@ -68,6 +68,10 @@ java -jar build/libs/psu-serverless-0.5.jar
 
 ## Configuration Quick Reference
 
+**Location**: The config file must be named `psu-serverless.config` and placed in the **same directory as the JAR** (or project root for development).
+
+**Example**: Copy `src/main/resources/psu-serverless.config.example` to the JAR directory and rename it.
+
 ```properties
 # Where game saves are stored locally
 game.savedir=/path/to/game/saves
