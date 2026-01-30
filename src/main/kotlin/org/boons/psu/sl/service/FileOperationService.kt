@@ -52,7 +52,7 @@ class FileOperationService {
     private fun copyDirectory(source: Path, destination: Path, overwrite: Boolean) {
         // If destination already exists and overwrite is requested, delete it completely
         if (destination.exists() && overwrite) {
-            destination.deleteRecursively()
+            deleteWithRetry(destination)
         }
 
         // Copy the directory recursively
@@ -62,5 +62,31 @@ class FileOperationService {
     private fun copyFile(source: Path, destination: Path, overwrite: Boolean) {
         destination.parent?.createDirectories()
         source.copyTo(destination, overwrite = overwrite)
+    }
+
+    /**
+     * Deletes a file or directory with up to 3 attempts, 5s delay between attempts.
+     * Throws exception if all attempts fail.
+     */
+    fun deleteWithRetry(path: Path) {
+        var lastError: Throwable? = null
+        repeat(3) { attempt ->
+            try {
+                if (path.exists()) {
+                    if (path.isDirectory()) {
+                        path.toFile().deleteRecursively()
+                    } else {
+                        path.deleteExisting()
+                    }
+                }
+                if (!path.exists()) return
+            } catch (e: Throwable) {
+                lastError = e
+            }
+            if (attempt < 2) {
+                Thread.sleep(5000)
+            }
+        }
+        throw lastError ?: RuntimeException("Failed to delete: $path")
     }
 }

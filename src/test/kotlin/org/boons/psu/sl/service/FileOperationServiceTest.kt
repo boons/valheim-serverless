@@ -114,4 +114,38 @@ class FileOperationServiceTest {
         assertEquals("content1", dest1.readText())
         assertEquals("content2", dest2.readText())
     }
+
+    @Test
+    fun `should retry and throw if file cannot be deleted`(@TempDir tempDir: Path) {
+        val file = tempDir.resolve("locked.txt")
+        file.writeText("locked")
+        // Simulate deletion failure by making file read-only and open
+        file.toFile().setWritable(false)
+        try {
+            assertThrows(Exception::class.java) {
+                service.deleteWithRetry(file)
+            }
+        } finally {
+            file.toFile().setWritable(true)
+            file.deleteIfExists()
+        }
+    }
+
+    @Test
+    fun `should retry and throw if directory cannot be deleted`(@TempDir tempDir: Path) {
+        val dir = tempDir.resolve("lockedDir")
+        dir.createDirectories()
+        val file = dir.resolve("file.txt")
+        file.writeText("locked")
+        // Simulate deletion failure by making file read-only
+        file.toFile().setWritable(false)
+        try {
+            assertThrows(Exception::class.java) {
+                service.deleteWithRetry(dir)
+            }
+        } finally {
+            file.toFile().setWritable(true)
+            dir.toFile().deleteRecursively()
+        }
+    }
 }
